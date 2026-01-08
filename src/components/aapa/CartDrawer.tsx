@@ -69,12 +69,13 @@ const CartDrawer = () => {
   });
 
   // Calculate delivery charge based on district
-  useEffect(() => {
+ useEffect(() => {
     if (formData.district === "Anantnag") {
       setDeliveryCharge(40);
-    } else if (formData.district && formData.district !== "Other") {
-      const isJK = JK_DISTRICTS.includes(formData.district);
-      setDeliveryCharge(isJK ? 90 : 130);
+    } else if (formData.district === "Srinagar" || formData.district === "Ganderbal" || formData.district === "Shopian" || formData.district === "Kulgam" || formData.district === "Pulwama" || formData.district === "Budgam" || formData.district === "Baramulla" || formData.district === "Bandipora" || formData.district === "Kupwara") {
+      setDeliveryCharge(90);
+    } else if (formData.district === "Jammu" || formData.district === "Kathua" || formData.district === "Samba" || formData.district === "Udhampur" || formData.district === "Reasi" || formData.district === "Rajouri" || formData.district === "Poonch" || formData.district === "Doda" || formData.district === "Kishtwar" || formData.district === "Ramban") {
+      setDeliveryCharge(120);
     } else if (formData.district === "Other" && formData.customState) {
       setDeliveryCharge(130);
     } else {
@@ -425,18 +426,32 @@ const CartDrawer = () => {
                   required
                 >
                   <option value="">Select Your District *</option>
-                  <optgroup label="Jammu & Kashmir (₹60 delivery)">
-                    {JK_DISTRICTS.map((district) => (
-                      <option key={district} value={district}>
-                        {district}
-                      </option>
-                    ))}
+                  <optgroup label="Jammu & Kashmir - Kashmir (₹90 delivery)">
+                    {JK_DISTRICTS.map((district) => {
+                      // Filter only Kashmir districts
+                      if (["Srinagar", "Ganderbal", "Shopian", "Kulgam", "Pulwama", "Budgam", "Baramulla", "Bandipora", "Kupwara"].includes(district)) {
+                        return <option key={district} value={district}>{district}</option>;
+                      }
+                      return null;
+                    })}
                   </optgroup>
-                  <optgroup label="Other States (₹100 delivery)">
-                    {/* <option value="Delhi">Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Bangalore">Bangalore</option> */}
-                    <option value="Other">Other </option>
+                  
+                  <optgroup label="Anantnag (₹40 delivery)">
+                    <option value="Anantnag">Anantnag</option>
+                  </optgroup>
+                  
+                  <optgroup label="Jammu & Kashmir - Jammu (₹120 delivery)">
+                    {JK_DISTRICTS.map((district) => {
+                      // Filter only Jammu districts
+                      if (["Jammu", "Kathua", "Samba", "Udhampur", "Reasi", "Rajouri", "Poonch", "Doda", "Kishtwar", "Ramban"].includes(district)) {
+                        return <option key={district} value={district}>{district}</option>;
+                      }
+                      return null;
+                    })}
+                  </optgroup>
+                  
+                  <optgroup label="Other States (₹130 delivery)">
+                    <option value="Other">Other</option>
                   </optgroup>
                 </select>
                 {errors.district && (
