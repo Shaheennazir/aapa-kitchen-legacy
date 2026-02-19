@@ -360,10 +360,43 @@ const CartDrawer = () => {
                         ₹{subtotal}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 text-center mb-6">
-                      Shipping calculated at checkout
-                    </p>
                   </div>
+
+                  {/* Coupon Code Section */}
+                  <div className="bg-[#232938] rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <input
+                        type="text"
+                        name="coupon"
+                        placeholder="RAMADAN20"
+                        value={formData.coupon}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 bg-[#1a1f2e] border ${
+                          errors.coupon
+                            ? "border-red-500 focus:ring-red-500"
+                            : "border-gray-700 focus:ring-yellow-500"
+                        } text-white rounded-lg focus:outline-none focus:ring-2 placeholder-gray-500`}
+                      />
+                      <button
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, coupon: 'RAMADAN20' }));
+                          setErrors(prev => ({ ...prev, coupon: '' }));
+                        }}
+                        className="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {formData.coupon === 'RAMADAN20' && (
+                      <div className="text-emerald-400 text-sm mt-2">
+                        ✓ 20% extra applied to all items
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-gray-500 text-center mb-6">
+                    Shipping calculated at checkout
+                  </p>
 
                   {/* Actions */}
                   <button
@@ -389,25 +422,25 @@ const CartDrawer = () => {
                 charges
               </p>
 
-              {/* Full Name */}
-              <div>
+              {/* Coupon Code */}
+              <div className="flex gap-2 mb-4">
                 <input
                   type="text"
-                  name="fullName"
-                  placeholder="Your Full Name *"
-                  value={formData.fullName}
+                  name="coupon"
+                  placeholder="Coupon code *"
+                  value={formData.coupon}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 bg-[#232938] border ${
-                    errors.fullName
+                    errors.coupon
                       ? "border-red-500 focus:ring-red-500"
                       : "border-gray-700 focus:ring-yellow-500"
                   } text-white rounded-lg focus:outline-none focus:ring-2 placeholder-gray-500`}
                   required
                 />
-                {errors.fullName && (
+                {errors.coupon && (
                   <p className="text-red-400 text-sm mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    {errors.fullName}
+                    {errors.coupon}
                   </p>
                 )}
               </div>
