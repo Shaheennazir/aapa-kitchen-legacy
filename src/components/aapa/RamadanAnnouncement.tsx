@@ -48,7 +48,7 @@ const RamadanAnnouncement = () => {
             <div className="flex items-center space-x-6 mx-6">
               <Moon className="w-5 h-5 text-emerald-200" />
               <span className="font-medium">🌙 Ramadan Mubarak!</span>
-              <span className="text-emerald-200 font-semibold">20% OFF</span>
+              <span className="text-emerald-200 font-semibold">20% More</span>
               <span className="bg-emerald-700 px-3 py-1 rounded-full text-sm font-bold border border-emerald-600">
                 RAMADAN20
               </span>
@@ -61,7 +61,7 @@ const RamadanAnnouncement = () => {
             <div className="flex items-center space-x-6 mx-6">
               <Moon className="w-5 h-5 text-emerald-200" />
               <span className="font-medium">🌙 Ramadan Mubarak!</span>
-              <span className="text-emerald-200 font-semibold">20% OFF</span>
+              <span className="text-emerald-200 font-semibold">20% More</span>
               <span className="bg-emerald-700 px-3 py-1 rounded-full text-sm font-bold border border-emerald-600">
                 RAMADAN20
               </span>
@@ -74,7 +74,7 @@ const RamadanAnnouncement = () => {
             <div className="flex items-center space-x-6 mx-6">
               <Moon className="w-5 h-5 text-emerald-200" />
               <span className="font-medium">🌙 Ramadan Mubarak!</span>
-              <span className="text-emerald-200 font-semibold">20% OFF</span>
+              <span className="text-emerald-200 font-semibold">20% More</span>
               <span className="bg-emerald-700 px-3 py-1 rounded-full text-sm font-bold border border-emerald-600">
                 RAMADAN20
               </span>

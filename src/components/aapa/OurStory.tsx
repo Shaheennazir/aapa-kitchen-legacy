@@ -1,13 +1,42 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+import StoryPopup from "./StoryPopup";
 import Heritage from "../../../public/Heritage.jpeg";
+
 const OurStory = () => {
+  const { addToCart, updateQuantity, setIsOpen } = useCart();
+  const [showPopup, setShowPopup] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
+  // Force popup to show immediately for testing
   useEffect(() => {
+    console.log('OurStory component mounted');
+    setTimeout(() => {
+      console.log('Forcing popup to show for testing');
+      setShowPopup(true);
+    }, 1000); // Show after 1 second
+  }, []);
+
+  useEffect(() => {
+    // Check if popup should be shown immediately (for testing)
+    const hasSeenPopup = localStorage.getItem('ramadan-popup-seen');
+    console.log('Our Story section visible, hasSeenPopup:', hasSeenPopup);
+    
+    // Show popup immediately if not seen before, or if testing
+    if (!hasSeenPopup) {
+      console.log('Showing popup immediately (not waiting for intersection)');
+      setShowPopup(true);
+      localStorage.setItem('ramadan-popup-seen', 'true');
+    }
+    
+    // Set up Intersection Observer for animations
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            console.log('Our Story intersection:', entry.isIntersecting, entry.intersectionRatio);
+            
+            // Trigger fade-up animations
             entry.target.querySelectorAll(".fade-up").forEach((el, i) => {
               setTimeout(() => {
                 el.classList.add("visible");
@@ -16,22 +45,78 @@ const OurStory = () => {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 } // Lower threshold for earlier triggering
     );
 
     if (sectionRef.current) {
+      console.log('Starting observer on Our Story section');
       observer.observe(sectionRef.current);
     }
 
     return () => observer.disconnect();
   }, []);
 
+  const handleClaimOffer = () => {
+    console.log('Claim offer clicked!');
+    
+    // Add 350gm + 20% extra to cart when claimed
+    const { items } = useCart();
+    
+    if (items.length === 0) {
+      // If cart is empty, add a free "Ramadan Blessing" item
+      const ramadanBlessing = {
+        id: 'ramadan-blessing',
+        name: 'Ramadan Blessing',
+        price: 0,
+        weight: 'Gift',
+        description: '20% extra goodness as Ramadan blessing',
+        image: '/placeholder.svg',
+        ingredients: ['Blessings', 'Love', 'Tradition'],
+        tastingNotes: 'A taste of Ramadan generosity',
+        inStock: true
+      };
+      
+      addToCart(ramadanBlessing, 1);
+    } else {
+      // Add 350gm + 20% extra quantity to existing items
+      items.forEach(item => {
+        const extraQuantity = Math.round(item.quantity * 0.2); // 20% extra
+        const newQuantity = item.quantity + extraQuantity;
+        
+        // Update the item with extra quantity
+        updateQuantity(item.product.id, newQuantity);
+      });
+    }
+    
+    setShowPopup(false);
+    setIsOpen(true); // Open cart section
+    localStorage.setItem('ramadan-popup-seen', 'true');
+    localStorage.setItem('ramadan-extra-applied', 'true');
+  };
+
+  const handleClosePopup = () => {
+    console.log('Close popup clicked!');
+    setShowPopup(false);
+    localStorage.setItem('ramadan-popup-seen', 'true');
+  };
+
+  // Debug: Log when showPopup changes
+  useEffect(() => {
+    console.log('showPopup state changed:', showPopup);
+  }, [showPopup]);
+
   return (
-    <section
-      id="story"
-      ref={sectionRef}
-      className="section-padding bg-charcoal-light relative overflow-hidden"
-    >
+    <>
+      <StoryPopup 
+        isVisible={showPopup}
+        onClose={handleClosePopup}
+        onClaimOffer={handleClaimOffer}
+      />
+      <section
+        id="story"
+        ref={sectionRef}
+        className="section-padding bg-charcoal-light relative overflow-hidden"
+      >
       {/* Decorative accent */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
@@ -119,6 +204,7 @@ const OurStory = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

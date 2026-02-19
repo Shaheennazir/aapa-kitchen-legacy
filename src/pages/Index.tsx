@@ -5,11 +5,13 @@ import Navbar from "@/components/aapa/Navbar";
 import Hero from "@/components/aapa/Hero";
 import OurStory from "@/components/aapa/OurStory";
 import Products from "@/components/aapa/Products";
+import Awards from "@/components/aapa/Awards";
 import PreLaunchNote from "@/components/aapa/PreLaunchNote";
 import Testimonials from "@/components/aapa/Testimonials";
 import InstagramFeed from "@/components/aapa/InstagramFeed";
 import Footer from "@/components/aapa/Footer";
 import CartDrawer from "@/components/aapa/CartDrawer";
+
 
 const Index = () => {
   const [announcementVisible, setAnnouncementVisible] = useState(true);
@@ -51,6 +53,7 @@ const Index = () => {
           <Hero />
           <OurStory />
           <Products />
+          <Awards />
           <PreLaunchNote />
           <Testimonials />
           <InstagramFeed />

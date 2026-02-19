@@ -1,6 +1,34 @@
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 const Hero = () => {
+  const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll(".fade-up").forEach((el, i) => {
+              setTimeout(() => {
+                el.classList.add("visible");
+                setVisibleElements(prev => new Set(prev).add(el.id));
+              }, i * 150);
+            });
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const heroSection = document.getElementById('hero');
+    if (heroSection) {
+      observer.observe(heroSection);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       id="hero"
@@ -16,8 +44,8 @@ const Hero = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         {/* Pre-launch badge */}
         <div
-          className="inline-flex items-center gap-2 mb-32 opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.2s" }}
+          id="hero-badge"
+          className="inline-flex items-center gap-2 mb-32 fade-up"
         >
           {/* <span className="badge-premium">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -27,8 +55,8 @@ const Hero = () => {
 
         {/* Main headline */}
         <h1
-          className="text-display text-foreground mb-6 opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.4s" }}
+          id="hero-headline"
+          className="text-display text-foreground mb-6 fade-up"
         >
           Pure Kashmiri,
           <br />
@@ -37,15 +65,15 @@ const Hero = () => {
 
         {/* Subheadline */}
         <p
-          className="text-subheadline max-w-2xl mx-auto mb-4 opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.6s" }}
+          id="hero-subheadline"
+          className="text-subheadline max-w-2xl mx-auto mb-4 fade-up"
         >
           Celebrating 60+ years of Aapa's anchaar-making legacy
         </p>
 
         <p
-          className="text-body max-w-xl mx-auto mb-12 opacity-0 animate-fade-in"
-          style={{ animationDelay: "0.8s" }}
+          id="hero-description"
+          className="text-body max-w-xl mx-auto mb-12 fade-up"
         >
           Small-batch, handmade Kashmiri pickles crafted with love, heritage
           recipes, and absolutely no preservatives.
@@ -53,8 +81,8 @@ const Hero = () => {
 
         {/* CTAs */}
         <div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-fade-in"
-          style={{ animationDelay: "1s" }}
+          id="hero-ctas"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-up"
         >
           <a href="#products" className="btn-primary">
             Shop Anchaar
@@ -68,8 +96,8 @@ const Hero = () => {
       {/* Scroll indicator */}
       <a
         href="#story"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors opacity-0 animate-fade-in"
-        style={{ animationDelay: "1.4s" }}
+        id="hero-scroll"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors fade-up"
       >
         <ChevronDown className="w-5 h-5 animate-bounce" />
       </a>
