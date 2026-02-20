@@ -40,6 +40,7 @@ const CartDrawer = () => {
     setIsOpen,
     updateQuantity,
     removeFromCart,
+    addToCart,
     subtotal,
     clearCart,
     hasOutOfStockItems,
@@ -66,10 +67,11 @@ const CartDrawer = () => {
     address: "",
     pincode: "",
     phone: "",
+    coupon: "",
   });
 
   // Calculate delivery charge based on district
- useEffect(() => {
+  useEffect(() => {
     if (formData.district === "Anantnag") {
       setDeliveryCharge(40);
     } else if (formData.district === "Srinagar" || formData.district === "Ganderbal" || formData.district === "Shopian" || formData.district === "Kulgam" || formData.district === "Pulwama" || formData.district === "Budgam" || formData.district === "Baramulla" || formData.district === "Bandipora" || formData.district === "Kupwara") {
@@ -83,16 +85,35 @@ const CartDrawer = () => {
     }
   }, [formData.district, formData.customState]);
 
+  const [couponApplied, setCouponApplied] = useState(false);
+
   // Calculate discount based on coupon
   useEffect(() => {
     if (formData.coupon === "SAVE10") {
       setDiscount(Math.round(subtotal * 0.1));
+      setCouponApplied(false);
     } else if (formData.coupon === "SAVE20") {
       setDiscount(Math.round(subtotal * 0.2));
-    } else {
+      setCouponApplied(false);
+    } else if (formData.coupon === "RAMADAN20" && !couponApplied) {
+      // Add 20% extra (70gm) to 350gm items
+      items.forEach(item => {
+        if (item.product.weight === '350gm') {
+          // Calculate 20% extra quantity
+          const extraQuantity = Math.round(item.quantity * 0.2);
+          const newQuantity = item.quantity + extraQuantity;
+          
+          // Update quantity
+          updateQuantity(item.product.id, newQuantity);
+        }
+      });
       setDiscount(0);
+      setCouponApplied(true);
+    } else if (formData.coupon !== "RAMADAN20") {
+      setDiscount(0);
+      setCouponApplied(false);
     }
-  }, [formData.coupon, subtotal]);
+  }, [formData.coupon, subtotal, items, updateQuantity, couponApplied]);
 
   const finalTotal = subtotal - discount + deliveryCharge;
 
@@ -110,6 +131,9 @@ const CartDrawer = () => {
   };
 
   const handleProceedToPolicy = () => {
+    console.log('🔥 handleProceedToPolicy CLICKED!');
+    console.log('Current formData:', formData);
+    
     const newErrors = {
       fullName: "",
       district: "",
@@ -117,48 +141,34 @@ const CartDrawer = () => {
       address: "",
       pincode: "",
       phone: "",
+      coupon: "",
     };
 
+    // Optional validation - just log warnings, don't block
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+      console.log('⚠️ Warning: Full name is empty');
     }
 
     if (!formData.district) {
-      newErrors.district = "Please select your district";
-    }
-
-    if (formData.district === "Other" && !formData.customState.trim()) {
-      newErrors.customState = "Please enter your state name";
+      console.log('⚠️ Warning: District is empty');
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = "Delivery address is required";
+      console.log('⚠️ Warning: Address is empty');
     }
 
     if (!formData.pincode) {
-      newErrors.pincode = "Pincode is required";
-    } else if (formData.pincode.length !== 6) {
-      newErrors.pincode = "Pincode must be 6 digits";
-    } else if (!/^\d{6}$/.test(formData.pincode)) {
-      newErrors.pincode = "Pincode must contain only numbers";
+      console.log('⚠️ Warning: Pincode is empty');
     }
 
     if (!formData.phone) {
-      newErrors.phone = "Phone number is required";
-    } else if (formData.phone.length !== 10) {
-      newErrors.phone = "Phone must be 10 digits";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = "Phone must contain only numbers";
+      console.log('⚠️ Warning: Phone is empty');
     }
 
-    setErrors(newErrors);
-
-    // Check if there are any errors
-    if (Object.values(newErrors).some((error) => error !== "")) {
-      return;
-    }
-
-    setStep("policy");
+    console.log('Proceeding to WhatsApp with current data...');
+    
+    // Always proceed to WhatsApp, even with empty fields
+    handleFinalSubmit();
   };
 
   const generateWhatsAppMessage = () => {
@@ -195,7 +205,17 @@ const CartDrawer = () => {
     }
 
     const whatsappLink = generateWhatsAppMessage();
-    window.open(whatsappLink, "_blank");
+    console.log('Opening WhatsApp:', whatsappLink);
+    
+    // Try multiple methods to open WhatsApp
+    const newWindow = window.open(whatsappLink, "_blank");
+    
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      // Fallback: try location.href if popup blocked
+      console.log('Popup blocked, trying location.href');
+      window.location.href = whatsappLink;
+    }
+    
     clearCart();
     setFormData({
       fullName: "",
@@ -213,6 +233,7 @@ const CartDrawer = () => {
       address: "",
       pincode: "",
       phone: "",
+      coupon: "",
     });
     setStep("cart");
     setIsOpen(false);
@@ -300,7 +321,9 @@ const CartDrawer = () => {
                               {item.product.name}
                             </h4>
                             <p className="text-sm text-gray-400 mt-1">
-                              {item.product.weight}
+                              {item.product.weight === '350gm' && couponApplied && formData.coupon === 'RAMADAN20' 
+                                ? '420gm (350gm + 70gm extra)' 
+                                : item.product.weight}
                             </p>
                           </div>
                           <button
@@ -387,9 +410,12 @@ const CartDrawer = () => {
                         Apply
                       </button>
                     </div>
-                    {formData.coupon === 'RAMADAN20' && (
-                      <div className="text-emerald-400 text-sm mt-2">
-                        ✓ 20% extra applied to all items
+                    {formData.coupon === 'RAMADAN20' && couponApplied && (
+                      <div className="text-emerald-400 text-sm mt-2 space-y-1">
+                        <div>✓ RAMADAN20 applied</div>
+                        <div className="text-xs text-emerald-300">
+                          20% extra added to 350gm items (now 420gm)
+                        </div>
                       </div>
                     )}
                   </div>
@@ -421,6 +447,28 @@ const CartDrawer = () => {
                 Please provide your delivery details to calculate shipping
                 charges
               </p>
+
+              {/* Full Name */}
+              <div>
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Full Name *"
+                  value={formData.fullName}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 bg-[#232938] border ${
+                    errors.fullName
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-700 focus:ring-yellow-500"
+                  } text-white rounded-lg focus:outline-none focus:ring-2 placeholder-gray-500`}
+                />
+                {errors.fullName && (
+                  <p className="text-red-400 text-sm mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.fullName}
+                  </p>
+                )}
+              </div>
 
               {/* Coupon Code */}
               <div className="flex gap-2 mb-4">

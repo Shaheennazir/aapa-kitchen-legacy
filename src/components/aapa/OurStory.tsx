@@ -4,7 +4,7 @@ import StoryPopup from "./StoryPopup";
 import Heritage from "../../../public/Heritage.jpeg";
 
 const OurStory = () => {
-  const { addToCart, updateQuantity, setIsOpen } = useCart();
+  const { addToCart, updateQuantity, setIsOpen, items } = useCart();
   const [showPopup, setShowPopup] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -60,7 +60,7 @@ const OurStory = () => {
     console.log('Claim offer clicked!');
     
     // Add 350gm + 20% extra to cart when claimed
-    const { items } = useCart();
+    // items is already available from component-level useCart
     
     if (items.length === 0) {
       // If cart is empty, add a free "Ramadan Blessing" item
@@ -89,9 +89,14 @@ const OurStory = () => {
     }
     
     setShowPopup(false);
-    setIsOpen(true); // Open cart section
     localStorage.setItem('ramadan-popup-seen', 'true');
     localStorage.setItem('ramadan-extra-applied', 'true');
+    
+    // Scroll to Products section (Aanchar buy section)
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleClosePopup = () => {

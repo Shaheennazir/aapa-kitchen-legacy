@@ -115,9 +115,16 @@ const Footer = () => {
 
         {/* Bottom bar */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
-            © {currentYear} The Aapa Foods. All rights reserved.
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-muted-foreground">
+              © {currentYear} The Aapa Foods. All rights reserved.
+            </p>
+            <img 
+              src="assets/fssai.PNG" 
+              alt="FSSAI Certified" 
+              className="h-40 w-auto object-contain"
+            />
+          </div>
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-destructive" /> in Kashmir
           </p>
