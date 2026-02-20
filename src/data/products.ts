@@ -1,5 +1,5 @@
 import { Product } from '@/contexts/CartContext';
-import { fetchStockData, isItemInStock } from '@/services/googleSheets';
+import { fetchStockData, isItemInStock } from '@/services/localStock';
 
 // Public assets should be referenced from the root in Vite.
 // Files in `public/` are served at `/` at runtime. Use absolute paths
